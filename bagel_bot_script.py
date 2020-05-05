@@ -102,12 +102,12 @@ for i in range(0, len(match_df.index)):
     response = slack_bagel.conversations.open(users=[user1_id, user2_id], return_im=True)
     conv_id = response.body['channel']['id']
     response = slack_bagel.chat.post_message(channel=conv_id,
-                                             text=f'Hello <@{user1_id}> and <@{user2_id}>! Welcome to your chat space for this round of DS Donut! Please use this chat to set up time to hangout!',
+                                             text=f'Hello <@{user1_id}> and <@{user2_id}>! Welcome to your chat space for this round of Bagel! Please use this chat to set up time to hangout!',
                                              as_user='@bagel-bot')
 
 # Send pairings to the ds_donut channel
 response = slack_bagel.chat.post_message(channel=ds_donut_id,
-                                         text='The new round of pairings are in! You should have received a DM from bagel-bot with your new DS Donut partner. Please post a photo here of your chat. Chat, chat away!',
+                                         text='The new round of pairings are in! You should have received a DM from bagel-bot with your new partner. Please post a photo here of your chat. Chat, chat away!',
                                          as_user='@bagel_bot')
 for i in range(0, len(match_df.index)):
     user1 = match_df[match_df.index == i].name1.values[0]
