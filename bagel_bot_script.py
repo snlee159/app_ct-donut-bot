@@ -3,7 +3,7 @@ import time
 from datetime import datetime as dt
 import pandas as pd
 
-bagel_token = "xoxb-985581256035-1099632773845-j7ai236jhgbBBzETkpl7SCaR"
+bagel_token = "[redacted]"
 slack_bagel = Slacker(bagel_token)
 
 # Get channel info
@@ -38,7 +38,8 @@ user_df = user_df[(~user_df.name.str.contains('donut')) &
 
 # Match across timezones and with those they haven't matched with yet
 history_df = pd.read_csv('donut_history.csv')
-possible_cases_df = pd.DataFrame(columns=['name1', 'name2', 'times_paired', 'is_diff_tz'])
+possible_cases_df = pd.DataFrame(
+    columns=['name1', 'name2', 'times_paired', 'is_diff_tz'])
 ind = 0
 for i in range(0, len(user_df['name'].tolist())):
     name1 = user_df['name'][i]
@@ -49,12 +50,13 @@ for i in range(0, len(user_df['name'].tolist())):
                                  ((history_df['name2'] == name1) &
                                   (history_df['name1'] == name2))]
         times_paired = len(tmp_hist_df.index)
-        is_diff_tz = user_df[user_df['name'] == name1]['tz'].values[0] == \
-                     user_df[user_df['name'] == name2]['tz'].values[0]
+        is_diff_tz = user_df[user_df['name'] ==
+                             name1]['tz'].values[0] != user_df[user_df['name'] == name2]['tz'].values[0]
         possible_cases_df.loc[ind] = [name1, name2, times_paired, is_diff_tz]
         ind += 1
 
-possible_cases_df['match_strength'] = (possible_cases_df['is_diff_tz'] * 2) - possible_cases_df['times_paired']
+possible_cases_df['match_strength'] = (
+    possible_cases_df['is_diff_tz']) - possible_cases_df['times_paired']*2
 
 filter_cases_df = possible_cases_df.copy(deep=True)
 match_df = pd.DataFrame(columns=['name1', 'name2'])
@@ -79,7 +81,8 @@ for user in user_df['name'].tolist():
     tmp_match_df = match_df[(match_df['name1'] == user) |
                             (match_df['name2'] == user)]
     if len(tmp_match_df.index) == 0:
-        print(f'User: {user} was not matched. Setting a second match up for them...')
+        print(
+            f'User: {user} was not matched. Setting a second match up for them...')
         top_user_match = possible_cases_df[(possible_cases_df['name1'] == user) |
                                            (possible_cases_df['name2'] == user)].sort_values('match_strength',
                                                                                              ascending=False).reset_index(
@@ -99,7 +102,8 @@ for i in range(0, len(match_df.index)):
     user2 = match_df[match_df.index == i].name2.values[0]
     user1_id = user_df[user_df['name'] == user1]['id'].values[0]
     user2_id = user_df[user_df['name'] == user2]['id'].values[0]
-    response = slack_bagel.conversations.open(users=[user1_id, user2_id], return_im=True)
+    response = slack_bagel.conversations.open(
+        users=[user1_id, user2_id], return_im=True)
     conv_id = response.body['channel']['id']
     response = slack_bagel.chat.post_message(channel=conv_id,
                                              text=f'Hello <@{user1_id}> and <@{user2_id}>! Welcome to your chat space for this round of Bagel! Please use this chat to set up time to hangout!',
