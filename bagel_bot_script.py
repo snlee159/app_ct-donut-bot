@@ -3,7 +3,6 @@ import time
 from datetime import datetime as dt
 import pandas as pd
 
-bagel_token = "[redacted]"
 slack_bagel = Slacker(bagel_token)
 
 # Get channel info
